@@ -1,59 +1,70 @@
 package org.dikso.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
-
+import com.google.gwt.user.client.ui.TabLayoutPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Dikso implements EntryPoint {
-	private SuggestBox searchBox = new SuggestBox();
-	private Button searchButton = new Button("szörcs");
-	private Button testButton = new Button("test");
-	private SqliteImportServiceAsync sqliteImportSvc = GWT.create(SqliteImportService.class);
 	
-	/**
-	 * This is the entry point method.
-	 */
+	private TabLayoutPanel tabLayoutPanel;
+	private DockLayoutPanel dictionaryPanel;
+	private AdminTab adminTab;
+	
+	
+	private SuggestBox searchBox;
+	//private Button searchButton;
+	
+	
+
 	public void onModuleLoad() {
 		Resources.INSTANCE.css().ensureInjected();
 		
-		RootPanel.get("search-box").add(searchBox);
-		RootPanel.get("search-button").add(searchButton);
+		dictionaryPanel = new DockLayoutPanel(Unit.EM);
+		adminTab = new AdminTab();
 		
-		searchBox.setFocus(true);
+		searchBox = new SuggestBox();
+		//searchButton = new Button("szörcs");
+		dictionaryPanel.add(searchBox);
+		//dictionaryPanel.add(searchButton);
 		
-		testButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				importSqlite();
+		tabLayoutPanel = new TabLayoutPanel(1.5, Unit.EM);
+		tabLayoutPanel.add(dictionaryPanel, "dictionary");
+		tabLayoutPanel.add(adminTab, "admin");
+		
+		tabLayoutPanel.addSelectionHandler(new SelectionHandler<Integer>(){
+			public void onSelection(SelectionEvent<Integer> event) {
+				History.newItem(Page.toPage(event.getSelectedItem()).toString());
+			}});
+		
+		History.addValueChangeHandler(new ValueChangeHandler<String>() {
+			public void onValueChange(ValueChangeEvent<String> event) {
+				
+		        switch (Page.toPage(event.getValue())) {
+		        	case DICTIONARY:
+		        		tabLayoutPanel.selectTab(dictionaryPanel);
+		        		break;
+		        	case ADMIN:
+		        		tabLayoutPanel.selectTab(adminTab);
+		        		break;
+		        }
 			}
 		});
+
 		
-	}
-	
-	private void importSqlite() {
-		if (sqliteImportSvc == null) {
-			sqliteImportSvc =GWT.create(SqliteImportService.class);
-		}
-		
-		AsyncCallback<Void> callback = new AsyncCallback<Void>() {
-			public void onFailure(Throwable caught) {
-				
-			}
-			@Override
-			public void onSuccess(Void result) {
-				// TODO Auto-generated method stub
-				
-			}
-		};
-		
-		sqliteImportSvc.loadDatabase(callback);
+
+		RootLayoutPanel rootPanel = RootLayoutPanel.get();
+		rootPanel.add(tabLayoutPanel);
 	}
 }
+	

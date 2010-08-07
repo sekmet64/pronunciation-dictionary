@@ -4,16 +4,15 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-  
-  <!-- Servlets -->
+
   <servlet>
-    <servlet-name>sqliteImportServiceImpl</servlet-name>
-    <servlet-class>org.dikso.server.SqliteImportServiceImpl</servlet-class>
+    <servlet-name>dictionaryService</servlet-name>
+    <servlet-class>org.dikso.server.DictionaryServiceImpl</servlet-class>
   </servlet>
-  
+
   <servlet-mapping>
-    <servlet-name>sqliteImportServiceImpl</servlet-name>
-    <url-pattern>/dikso/sqliteImport</url-pattern>
+    <servlet-name>dictionaryService</servlet-name>
+    <url-pattern>/dikso/dictionary</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->
